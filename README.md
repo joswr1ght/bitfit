@@ -47,6 +47,7 @@ Bitfit differentiates three types of changes in the target directory tree:
 + `+` A plus sign indicates that a file is present in the directory tree, but missing from the VERSION file
 + `-` A minus sign indicates that the file is missing from the directory tree, but recorded in the VERSION file
 
+Here is an example of Bitfit output where changes were applied to the starting directory and detected:
 ```
 $ touch /Volumes/SEC617/added-file
 $ rm /Volumes/SEC617/sec617/eap.pcap

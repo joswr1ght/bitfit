@@ -18,7 +18,7 @@ mismatch.
 
 ### Calculation Mode
 
-Bitfit never writes to anything other than STDOUT/STDERR.  To produce a hash verification file for use by Bitfit, redirect the output to the root of the starting directory in a file called "VERSION-*.txt" (where * can be any version/date syntax you want).
+Bitfit never writes to anything other than STDOUT/STDERR.  To produce a hash verification file for use by Bitfit, redirect the output to the root of the starting directory in a file called `VERSION-*.txt` (where * can be any version/date syntax you want).
 
 ```
 $ bitfit /Volumes/STARTDIR

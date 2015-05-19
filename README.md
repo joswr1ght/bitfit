@@ -3,6 +3,19 @@ Recursively validate a starting directory of file contents to identify changes, 
 
 ## Usage
 
+```
+$ ./bitfit.py
+Bitfit 1.0.0
+Usage: bitfit.py [OPTIONS] [STARTING DIRECTORY]
+     - With no arguments, recursively calculate hashes for all files
+-v   - Search for a VERSION verification file and validate hashes
+-l   - Reduce memory consumption for hashing on low memory systems
+
+In verification mode, + indicates a file not present in the VERSION file, -
+indicates a missing file in the directory tree, and ! indicates content
+mismatch.
+```
+
 ### Calculation Mode
 
 Bitfit never writes to anything.  To produce a hash verification file for use by Bitfit, redirect the output to the root of the starting directory in a file called "VERSION-*.txt" (where * can be any version/date syntax you want).

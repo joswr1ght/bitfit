@@ -1,3 +1,5 @@
+![Bitfit logo, because, logo](https://raw.githubusercontent.com/joswr1ght/bitfit/master/bitfit.png)
+
 # Bitfit
 Recursively validate a starting directory of file contents to identify changes, corrupt data. Similar to md5deep/hashdeep, but simpler.
 

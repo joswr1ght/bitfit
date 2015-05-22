@@ -22,9 +22,9 @@ Bitfit never writes to anything other than STDOUT/STDERR.  To produce a hash ver
 
 ```
 $ bitfit /Volumes/STARTDIR
-# bitfit 1.0.0 output generated on 2015-05-19 14:58:13.747511 by jwright
-# bitfit /Volumes/STARTDIR
-# filename,MD5,SHA1
+$ bitfit 1.0.0 output generated on 2015-05-19 14:58:13.747511 by jwright
+$ bitfit /Volumes/STARTDIR
+$ filename,MD5,SHA1
 BinaryCookieReader.py,1cc05d0aa1c51c49e6ff934146d163a3,3743b6038cb464655ef747fa3bf913d5f5322598
 class-dump-z,583bc57668d21788ff27b9b45c278738,d03d17fc9b03c9ea79f002ad186a16aa41e3f7eb
 issh,3b0f9166e0d6f0737a2e057dce662ca5,46bd78c8fedad58ac8b2a61f2a8724bad7999590

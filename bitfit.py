@@ -135,8 +135,8 @@ if __name__ == '__main__':
             print "Validation failed."
     else:
         # Just print out the list with Linux-syle filenames
-        print "# bitfit %s output generated on %s by %s"%(VER,str(datetime.now()),getpass.getuser())
-        print "# " + " ".join(sys.argv)
-        print "# filename,MD5,SHA1"
+        print "# bitfit %s output generated on %s by %s\r"%(VER,str(datetime.now()),getpass.getuser())
+        print "# " + " ".join(sys.argv) + "\r"
+        print "# filename,MD5,SHA1\r"
         writer = csv.writer(sys.stdout)
         writer.writerows(filelist)

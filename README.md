@@ -31,7 +31,7 @@ BinaryCookieReader.py,1cc05d0aa1c51c49e6ff934146d163a3,3743b6038cb464655ef747fa3
 class-dump-z,583bc57668d21788ff27b9b45c278738,d03d17fc9b03c9ea79f002ad186a16aa41e3f7eb
 issh,3b0f9166e0d6f0737a2e057dce662ca5,46bd78c8fedad58ac8b2a61f2a8724bad7999590
 josh,d41d8cd98f00b204e9800998ecf8427e,da39a3ee5e6b4b0d3255bfef95601890afd80709
-$ bitfit /Volumes/STARTDIR >/Volumes/STARTDIR/VERSION-SEC575-2015-1.txt
+$ bitfit /Volumes/STARTDIR >/Volumes/STARTDIR/VERSION-575.15.1.txt
 ```
 
 ### Verification Mode
@@ -63,7 +63,17 @@ Validation failed.
 
 ## Platforms
 
-Tested on Windows 8.1, OS X 10.10, and Debian-based Linux.  Windows binary included in the `bin/` directory, built with `C:\Python27\scripts\pyinstaller --onefile bitfit.py`.
+Tested on Windows 8.1, OS X 10.10, and Debian-based Linux.  Windows binary included in the `bin/` directory, built with `C:\Python27\scripts\pyinstaller --onefile bitfit.py`.  
+
+If you are running Bitfit from cmd.exe, you can create the VERSION file using standard redirection:
+````
+C:\Tools> bitfit.exe E:\ >E:\VERSION-575.15.1.txt
+```
+
+If you are running Bitfit from PowerShell (where everything is Unicode), you need to use the Out-Host cmdlet:
+```
+PS C:\Tools> bitfit.exe E:\ | Out-File -Encoding ascii VERSION-575.15.1.txt
+```
 
 ## Questions, Comments, Concerns?
 

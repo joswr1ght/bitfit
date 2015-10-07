@@ -4,9 +4,11 @@
 import os, sys, hashlib, getpass, csv, glob, re, textwrap
 from datetime import datetime
 
-VER="1.0.0"
+VER="1.1.0"
+SMALLBLOCK=65536
 
 def hasher(filename, blocksize=-1):
+    # Hash the file, returning MD5 and SHA1 in an optimal manner. Most of this code is error handling.
     hashmd5 = hashlib.md5()
     hashsha1 = hashlib.sha1()
     try:
@@ -14,12 +16,30 @@ def hasher(filename, blocksize=-1):
             for block in iter(lambda: f.read(blocksize), ""):
                 hashmd5.update(block)
                 hashsha1.update(block)
+
     except IOError:
         err = "Error: Unable to read the file \"%s\". Make sure you have permission to read this file.  You may have " \
                 "to disable or uninstall anti-virus to stop it from denying access to the file.  Correct this " \
                 "problem and try again."%filename
         sys.stderr.write(textwrap.fill(err, width=term_width()) + "\n")
         sys.exit(-1)
+
+    except MemoryError:
+        # OOM, revert to the smaller blocksize for this file
+        print "DEBUG: Reducing block size for the file %s"%filename
+        if blocksize != -1:
+            # Blocksize is already small - bail
+            err = "Error: Unable to read the file \"%s\" into memory. This could be caused by anti-virus, or by " \
+                    "other system instability issues. Kill some running processes before trying again."%filename
+            sys.stderr.write(textwrap.fill(err, width=term_width()) + "\n")
+            sys.exit(-1)
+
+        # We can't recover if this fails, so no try/except block.
+        with open(filename, "rb") as f:
+            for block in iter(lambda: f.read(SMALLBLOCK), ""):
+                hashmd5.update(block)
+                hashsha1.update(block)
+
     return (hashmd5.hexdigest(), hashsha1.hexdigest())
 
 def usage():
@@ -115,7 +135,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     if opt_lowmem:
-        hashblocklen=65536
+        hashblocklen=SMALLBLOCK
     else:
         # Optimize for memory rich systems
         hashblocklen=-1

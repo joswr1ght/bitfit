@@ -56,7 +56,7 @@ def usage():
 def term_width():
     """ Return the width of the terminal """
     if os.name == 'nt': # Windows
-        return int(re.search('\s+ Columns:\s+(\d+)',os.popen("mode con:", "r").read())[0])
+        return int(re.findall('\s+ Columns:\s+(\d+)',os.popen("mode con:", "r").read())[0])-1
     else:
         return int(os.popen('stty size', 'r').read().split()[1])
 

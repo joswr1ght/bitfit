@@ -7,7 +7,7 @@ Recursively validate a starting directory of file contents to identify changes, 
 
 ```
 $ ./bitfit.py
-Bitfit 1.0.0
+Bitfit 1.1.0
 Usage: bitfit.py [OPTIONS] [STARTING DIRECTORY]
      - With no arguments, recursively calculate hashes for all files
 -v   - Search for a VERSION verification file and validate hashes
@@ -74,6 +74,14 @@ If you are running Bitfit from PowerShell (where everything is Unicode), you nee
 ```
 PS C:\Tools> bitfit.exe E:\ | Out-File -Encoding ascii VERSION-575.15.1.txt
 ```
+
+## Installation
+
+Visit the wiki for instructions on installation for each platform.
+
+*** Installation on Windows
+*** Installation on OS X
+*** Installation on Linux
 
 ## Questions, Comments, Concerns?
 

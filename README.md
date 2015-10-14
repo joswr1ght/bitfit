@@ -75,14 +75,6 @@ If you are running Bitfit from PowerShell (where everything is Unicode), you nee
 PS C:\Tools> bitfit.exe E:\ | Out-File -Encoding ascii VERSION-575.15.1.txt
 ```
 
-## Installation
-
-Visit the wiki for instructions on installation for each platform.
-
-*** Installation on Windows
-*** Installation on OS X
-*** Installation on Linux
-
 ## Questions, Comments, Concerns?
 
 Open a ticket, or drop me a note: jwright@hasborg.com.

@@ -26,7 +26,7 @@ def hasher(filename, blocksize=-1):
 
     except MemoryError:
         # OOM, revert to the smaller blocksize for this file
-        print "DEBUG: Reducing block size for the file %s"%filename
+        #print "DEBUG: Reducing block size for the file %s"%filename
         if blocksize != -1:
             # Blocksize is already small - bail
             err = "Error: Unable to read the file \"%s\" into memory. This could be caused by anti-virus, or by " \

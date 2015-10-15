@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # MIT License, (c) Joshua Wright jwright@willhackforsushi.com
 # https://github.com/joswr1ght/bitfit
-import os, sys, hashlib, getpass, csv, glob, re, textwrap
+import os, sys, hashlib, getpass, csv, glob, re, textwrap, time
 from datetime import datetime
 
 VER="1.1.0"
@@ -48,6 +48,7 @@ def usage():
     print "     - With no arguments, recursively calculate hashes for all files"
     print "-v   - Search for a VERSION verification file and validate hashes"
     print "-l   - Reduce memory consumption for hashing on low memory systems"
+    print "-t   - Print timing and media speed information on STDERR"
     print ""
     msg="In verification mode, + indicates a file not present in the VERSION file, - " \
           "indicates a missing file in the directory tree, and ! indicates content mismatch."
@@ -112,6 +113,7 @@ if __name__ == '__main__':
     
     opt_verify = None
     opt_lowmem = None
+    opt_timing = None
     opt_startdir = None
 
     if len(sys.argv) == 1:
@@ -126,6 +128,9 @@ if __name__ == '__main__':
             continue
         elif i == '-v':
             opt_verify = True
+            continue
+        elif i == "-t":
+            opt_timing = True
             continue
 
     # The last argument must be a directory
@@ -157,6 +162,13 @@ if __name__ == '__main__':
 
     # Build a list of (filename, md5hash, sha1hash) for each file, regardless of specified options
     filelist = []
+
+    if opt_timing:
+        # Establish variable to store sum of sizes for all files hashed, used for crude media speed calculation
+        file_size = 0
+        # Establish wall clock time at start of the main loop
+        start_time = time.time()
+
     # Walk all subdirectories returning (filename, md5hash, sha1hash) for each file
     for (directory, _, files) in os.walk(opt_startdir):
         for f in files:
@@ -164,7 +176,17 @@ if __name__ == '__main__':
             pathfile = os.path.join(directory, f)
             hashes = hasher(pathfile, hashblocklen)
             filelist.append((linfname(os.path.relpath(pathfile,opt_startdir)),hashes[0], hashes[1]))
+            if opt_timing:
+                file_size = file_size + os.path.getsize(pathfile)
     filelist.sort()
+
+    if opt_timing:
+        # Establish wall clock time at end of main loop
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
+        # convert file_size to MB
+        file_size = file_size / 1024
 
     # With the filelist built, compare to the negative match list, or print
     # the results.
@@ -180,3 +202,8 @@ if __name__ == '__main__':
         print "# filename,MD5,SHA1\r"
         writer = csv.writer(sys.stdout)
         writer.writerows(filelist)
+
+    if opt_timing:
+        # Display basic speed stats to STDERR
+        timespeed = "Took %.2f seconds to hash %d MB (%.2f MB/sec)" % (elapsed_time, file_size, (file_size/elapsed_time))
+        sys.stderr.write(textwrap.fill(timespeed, width=term_width()) + "\n")

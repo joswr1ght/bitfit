@@ -177,7 +177,7 @@ if __name__ == '__main__':
             hashes = hasher(pathfile, hashblocklen)
             filelist.append((linfname(os.path.relpath(pathfile,opt_startdir)),hashes[0], hashes[1]))
             if opt_timing:
-                file_size = file_size + os.path.getsize(pathfile)
+                file_size = file_size + os.path.getsize(pathfile) / 1024
     filelist.sort()
 
     if opt_timing:

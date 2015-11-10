@@ -191,10 +191,13 @@ if __name__ == '__main__':
     # With the filelist built, compare to the negative match list, or print
     # the results.
     if opt_verify:
-        if validate_hashes(verfile, opt_startdir, filelist):
-            print "Validation complete, no errors."
-        else:
-            print "Validation failed."
+        try:
+            if validate_hashes(verfile, opt_startdir, filelist):
+                print "Validation complete, no errors."
+            else:
+                print "Validation failed."
+        except:
+            sys.stderr.write(textwrap.fill("Error parsing contents of the VERSION file \"" + verfile + "\". Ensure the file was generated with bitfit and not another tool. If the problem persists, open a ticket at https://github.com/joswr1ght/bitfit/issues and attach the VERSION file.", width=term_width()) + "\n")
     else:
         # Just print out the list with Linux-syle filenames
         print "# bitfit %s output generated on %s by %s\r"%(VER,str(datetime.now()),getpass.getuser())

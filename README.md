@@ -12,6 +12,7 @@ Usage: bitfit.py [OPTIONS] [STARTING DIRECTORY]
      - With no arguments, recursively calculate hashes for all files
 -v   - Search for a VERSION verification file and validate hashes
 -l   - Reduce memory consumption for hashing on low memory systems
+-t   - Print timing and media speed information on STDERR
 
 In verification mode, + indicates a file not present in the VERSION file, -
 indicates a missing file in the directory tree, and ! indicates content
@@ -59,6 +60,15 @@ $ bitfit -v /Volumes/SEC617
 !  sec617/aircrack-ng.pcap
 +  added-file
 Validation failed.
+```
+
+## Timing and media speed calculation
+
+When the "`-t`" argument is supplied, Bitfit will perform rough volume-over-time calculation during the validation process.  This is not scientific testing of the media's speed, but a general means of calculating the validation process.
+
+``` bitfit -t -v /Volumes/STARTDIR
+Validation complete, no errors.
+Took 69.32 seconds to hash 12852 MB (185.40 MB/sec)
 ```
 
 ## Platforms

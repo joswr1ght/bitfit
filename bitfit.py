@@ -4,7 +4,7 @@
 import os, sys, hashlib, getpass, csv, glob, re, textwrap, time
 from datetime import datetime
 
-VER="1.1.0"
+VER="1.1.1"
 SMALLBLOCK=65536
 
 def hasher(filename, blocksize=-1):
@@ -132,6 +132,9 @@ if __name__ == '__main__':
         elif i == "-t":
             opt_timing = True
             continue
+        elif i == "-h" or i == "--help":
+            usage()
+            sys.exit(0)
 
     # The last argument must be a directory
     opt_startdir = sys.argv[-1]

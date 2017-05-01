@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # MIT License, (c) Joshua Wright jwright@willhackforsushi.com
 # https://github.com/joswr1ght/bitfit
-import os, sys, hashlib, getpass, csv, glob, re, textwrap, time
+import os, sys, hashlib, getpass, csv, glob, re, textwrap, time, codecs
 from datetime import datetime
 
-VER="1.1.1"
+VER="1.1.2"
 SMALLBLOCK=65536
 
 def hasher(filename, blocksize=-1):
@@ -55,18 +55,38 @@ def usage():
     print textwrap.fill(msg, width=term_width()) + "\n"
 
 def term_width():
-    """ Return the width of the terminal """
-    if os.name == 'nt': # Windows
-        return int(re.findall('\s+ Columns:\s+(\d+)',os.popen("mode con:", "r").read())[0])-1
-    else:
-        return int(os.popen('stty size', 'r').read().split()[1])
+    """ Return the width of the terminal, or 80 """
+    try:
+        if os.name == 'nt': # Windows
+            return int(re.findall('\s+ Columns:\s+(\d+)',os.popen("mode con:", "r").read())[0])-1
+        else:
+            return int(os.popen('stty size', 'r').read().split()[1])
+    except:
+        return 80
 
 def validate_hashes(verfile, startdir, hashes):
     verhashes = []
     observedfiles = []
     verified=True
-    # Open file and build a new hashlist
-    reader = csv.reader(open(verfile, 'rb'))
+    # Open file, handling ASCII or Unicode (PowerShell output)
+    try:
+        fp = open(verfile)
+    except IOError:
+        sys.stderr.write("Cannot open version file %s. Exiting.\n"%verfile)
+        sys.exit(-1)
+
+    verfilestr=fp.read()
+
+    try:
+        verdatalist = verfilestr.decode("utf-8-sig").split("\n")
+    except UnicodeDecodeError:
+        # Handle PowerShell-generated unicode files
+        fp.seek(2)
+        verfilestr=fp.read()
+        verdatalist = verfilestr.decode("utf-16").split("\r\n\r\n")
+
+    # Build a new hashlist
+    reader = csv.reader(verdatalist[:-1]) # Skip the last list entry, which is the EOF marker
     for line in reader:
         if line[0].startswith("#") or line[0].startswith("VERSION-"):
             continue
@@ -200,6 +220,7 @@ if __name__ == '__main__':
             else:
                 print "Validation failed."
         except:
+            print sys.exc_info()
             sys.stderr.write(textwrap.fill("Error parsing contents of the VERSION file \"" + verfile + "\". Ensure the file was generated with bitfit and not another tool. If the problem persists, open a ticket at https://github.com/joswr1ght/bitfit/issues and attach the VERSION file.", width=term_width()) + "\n")
     else:
         # Just print out the list with Linux-syle filenames

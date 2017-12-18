@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # MIT License, (c) Joshua Wright jwright@willhackforsushi.com
 # https://github.com/joswr1ght/bitfit
-import os, sys, hashlib, getpass, csv, glob, re, textwrap, time, codecs
+# encoding=utf8
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+import os, hashlib, getpass, csv, glob, re, textwrap, time, codecs
 from datetime import datetime
 
 VER="1.1.2"
@@ -88,6 +93,8 @@ def validate_hashes(verfile, startdir, hashes):
     # Build a new hashlist
     reader = csv.reader(verdatalist[:-1]) # Skip the last list entry, which is the EOF marker
     for line in reader:
+        if line == []:
+            break
         if line[0].startswith("#") or line[0].startswith("VERSION-"):
             continue
         verhashes.append((line[0], line[1], line[2]))

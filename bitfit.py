@@ -9,7 +9,7 @@ sys.setdefaultencoding('utf8')
 import os, hashlib, getpass, csv, glob, re, textwrap, time, codecs
 from datetime import datetime
 
-VER="1.1.2"
+VER="1.1.3"
 SMALLBLOCK=65536
 
 def hasher(filename, blocksize=-1):

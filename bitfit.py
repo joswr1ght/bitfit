@@ -101,15 +101,16 @@ def validate_hashes(verfile, startdir, hashes, strict):
             break
         if line[0].startswith("#") or line[0].startswith("VERSION-"):
             continue
-        if not opt_strict and line[0].startswith(ignore_list):
-            continue
         verhashes.append((line[0], line[1], line[2]))
     verhashes.sort()
 
     missingdiff = list(set(verhashes) - set(hashes))
     if missingdiff:
-        verified=False
         for diff in missingdiff:
+            if not strict and diff[0].startswith(ignore_list) and os.path.isfile(os.path.join(startdir,diff[0])):
+                continue
+
+            verified=False
             # Check if the file exists - if it does, it's a change to the file
             if os.path.isfile(os.path.join(startdir,diff[0])):
                 # only report this entry as a change once
@@ -120,8 +121,11 @@ def validate_hashes(verfile, startdir, hashes, strict):
 
     addeddiff = list(set(hashes) - set(verhashes))
     if addeddiff:
-        verified=False
         for diff in addeddiff:
+            if not strict and diff[0].startswith(ignore_list):
+                continue
+
+            verified=False
             if diff[0] not in observedfiles:
                 print "+  %s"%diff[0]
 

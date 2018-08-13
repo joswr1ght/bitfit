@@ -11,6 +11,8 @@ Bitfit 1.1.0
 Usage: bitfit.py [OPTIONS] [STARTING DIRECTORY]
      - With no arguments, recursively calculate hashes for all files
 -v   - Search for a VERSION verification file and validate hashes
+-s   - Strict mode (with -v): Don't ignore validation of filesystem detritus
+       (Strict mode is always enabled for hash file creation.)
 -l   - Reduce memory consumption for hashing on low memory systems
 -t   - Print timing and media speed information on STDERR
 
@@ -61,6 +63,8 @@ $ bitfit -v /Volumes/SEC617
 +  added-file
 Validation failed.
 ```
+
+In Verification Mode, testing is done in non-strict mode, in which common filesystem detritus files are ignored.  These files are created upon inserting the USB and mounting the filesystem in read-write mode.  By running in non-strict mode, a verification run can still be successful even if such detritus files are present.  Strict mode can be enforced during a verification run with the `-s` flag.
 
 ## Timing and media speed calculation
 

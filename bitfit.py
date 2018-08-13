@@ -12,6 +12,8 @@ from datetime import datetime
 VER="1.1.3"
 SMALLBLOCK=65536
 
+ignore_list=('System Volume Information', '.DS_Store', '.Trashes', '._', '.fseventsd', '.Spotlight-V100')
+
 def hasher(filename, blocksize=-1):
     # Hash the file, returning MD5 and SHA1 in an optimal manner. Most of this code is error handling.
     hashmd5 = hashlib.md5()
@@ -52,6 +54,8 @@ def usage():
     print "Usage: %s [OPTIONS] [STARTING DIRECTORY]"%os.path.basename(sys.argv[0])
     print "     - With no arguments, recursively calculate hashes for all files"
     print "-v   - Search for a VERSION verification file and validate hashes"
+    print "-s   - Strict mode (with -v): Don't ignore validation of filesystem detritus"
+    print "       (Strict mode is always enabled for hash file creation.)"
     print "-l   - Reduce memory consumption for hashing on low memory systems"
     print "-t   - Print timing and media speed information on STDERR"
     print ""
@@ -69,7 +73,7 @@ def term_width():
     except:
         return 80
 
-def validate_hashes(verfile, startdir, hashes):
+def validate_hashes(verfile, startdir, hashes, strict):
     verhashes = []
     observedfiles = []
     verified=True
@@ -90,12 +94,14 @@ def validate_hashes(verfile, startdir, hashes):
         verfilestr=fp.read()
         verdatalist = verfilestr.decode("utf-16").split("\r\n\r\n")
 
-    # Build a new hashlist
+    # Build a new hashlist from the VERSION-* file
     reader = csv.reader(verdatalist[:-1]) # Skip the last list entry, which is the EOF marker
     for line in reader:
         if line == []:
             break
         if line[0].startswith("#") or line[0].startswith("VERSION-"):
+            continue
+        if not opt_strict and line[0].startswith(ignore_list):
             continue
         verhashes.append((line[0], line[1], line[2]))
     verhashes.sort()
@@ -139,6 +145,7 @@ def normfname(filename):
 if __name__ == '__main__':
     
     opt_verify = None
+    opt_strict = None
     opt_lowmem = None
     opt_timing = None
     opt_startdir = None
@@ -159,15 +166,27 @@ if __name__ == '__main__':
         elif i == "-t":
             opt_timing = True
             continue
+        elif i == '-s':
+            opt_strict = True
+            continue
         elif i == "-h" or i == "--help":
             usage()
             sys.exit(0)
+
+    # Strict mode only optional for verification
+    if not opt_verify: opt_strict = True
 
     # The last argument must be a directory
     opt_startdir = sys.argv[-1]
     if not os.path.isdir(opt_startdir):
         sys.stdout.write("Error: Last argument must be the starting directory for content.\n")
         sys.exit(-1)
+
+    # using the opt_startdir value, construct a tuple of absolute file paths to ignore
+    if not opt_strict:
+        ignore_paths = ()
+        for loc in ignore_list:
+            ignore_paths = ignore_paths + (os.path.join(opt_startdir, loc),)
 
     if opt_lowmem:
         hashblocklen=SMALLBLOCK
@@ -201,8 +220,10 @@ if __name__ == '__main__':
 
     # Walk all subdirectories returning (filename, md5hash, sha1hash) for each file
     for (directory, _, files) in os.walk(opt_startdir):
+        if not opt_strict and directory.startswith(ignore_paths): continue
         for f in files:
             if f.startswith("VERSION-"): continue
+            if not opt_strict and f.startswith(ignore_list): continue
             pathfile = os.path.join(directory, f)
             hashes = hasher(pathfile, hashblocklen)
             filelist.append((linfname(os.path.relpath(pathfile,opt_startdir)),hashes[0], hashes[1]))
@@ -222,7 +243,7 @@ if __name__ == '__main__':
     # the results.
     if opt_verify:
         try:
-            if validate_hashes(verfile, opt_startdir, filelist):
+            if validate_hashes(verfile, opt_startdir, filelist, opt_strict):
                 print "Validation complete, no errors."
             else:
                 print "Validation failed."

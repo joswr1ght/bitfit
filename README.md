@@ -80,7 +80,7 @@ Took 69.32 seconds to hash 12852 MB (185.40 MB/sec)
 Tested on Windows 8.1, OS X 10.10, and Debian-based Linux.  Windows binary included in the `bin/` directory, built with `C:\Python27\scripts\pyinstaller --onefile bitfit.py`.  
 
 If you are running Bitfit from cmd.exe, you can create the VERSION file using standard redirection:
-````
+```
 C:\Tools> bitfit.exe E:\ >E:\VERSION-575.15.1.txt
 ```
 

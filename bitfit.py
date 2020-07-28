@@ -1,15 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # MIT License, (c) Joshua Wright jwright@willhackforsushi.com
 # https://github.com/joswr1ght/bitfit
 # encoding=utf8
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+import importlib
 
-import os, hashlib, getpass, csv, glob, re, textwrap, time, codecs
+import os, hashlib, getpass, csv, glob, re, textwrap, time
 from datetime import datetime
+import pdb
 
-VER="1.1.3"
+VER="1.2.0"
 SMALLBLOCK=65536
 
 def hasher(filename, blocksize=-1):
@@ -18,7 +18,10 @@ def hasher(filename, blocksize=-1):
     hashsha1 = hashlib.sha1()
     try:
         with open(filename, "rb") as f:
-            for block in iter(lambda: f.read(blocksize), ""):
+            while True:
+                block = f.read(blocksize)
+                if not block:
+                    break
                 hashmd5.update(block)
                 hashsha1.update(block)
 
@@ -48,16 +51,16 @@ def hasher(filename, blocksize=-1):
     return (hashmd5.hexdigest(), hashsha1.hexdigest())
 
 def usage():
-    print "Bitfit %s"%VER
-    print "Usage: %s [OPTIONS] [STARTING DIRECTORY]"%os.path.basename(sys.argv[0])
-    print "     - With no arguments, recursively calculate hashes for all files"
-    print "-v   - Search for a VERSION verification file and validate hashes"
-    print "-l   - Reduce memory consumption for hashing on low memory systems"
-    print "-t   - Print timing and media speed information on STDERR"
-    print ""
+    print("Bitfit %s"%VER)
+    print("Usage: %s [OPTIONS] [STARTING DIRECTORY]"%os.path.basename(sys.argv[0]))
+    print("     - With no arguments, recursively calculate hashes for all files")
+    print("-v   - Search for a VERSION verification file and validate hashes")
+    print("-l   - Reduce memory consumption for hashing on low memory systems")
+    print("-t   - Print timing and media speed information on STDERR")
+    print("")
     msg="In verification mode, + indicates a file not present in the VERSION file, - " \
           "indicates a missing file in the directory tree, and ! indicates content mismatch."
-    print textwrap.fill(msg, width=term_width()) + "\n"
+    print(textwrap.fill(msg, width=term_width()) + "\n")
 
 def term_width():
     """ Return the width of the terminal, or 80 """
@@ -81,14 +84,13 @@ def validate_hashes(verfile, startdir, hashes):
         sys.exit(-1)
 
     verfilestr=fp.read()
-
     try:
-        verdatalist = verfilestr.decode("utf-8-sig").split("\n")
+        verdatalist = verfilestr.split("\n")
     except UnicodeDecodeError:
         # Handle PowerShell-generated unicode files
         fp.seek(2)
         verfilestr=fp.read()
-        verdatalist = verfilestr.decode("utf-16").split("\r\n\r\n")
+        verdatalist = verfilestr.split("\r\n\r\n")
 
     # Build a new hashlist
     reader = csv.reader(verdatalist[:-1]) # Skip the last list entry, which is the EOF marker
@@ -108,16 +110,16 @@ def validate_hashes(verfile, startdir, hashes):
             if os.path.isfile(os.path.join(startdir,diff[0])):
                 # only report this entry as a change once
                 observedfiles.append(diff[0])
-                print "!  %s"%diff[0]
+                print("!  %s"%diff[0])
             else:
-                print "-  %s"%diff[0]
+                print("-  %s"%diff[0])
 
     addeddiff = list(set(hashes) - set(verhashes))
     if addeddiff:
         verified=False
         for diff in addeddiff:
             if diff[0] not in observedfiles:
-                print "+  %s"%diff[0]
+                print("+  %s"%diff[0])
 
     return verified
 
@@ -223,17 +225,17 @@ if __name__ == '__main__':
     if opt_verify:
         try:
             if validate_hashes(verfile, opt_startdir, filelist):
-                print "Validation complete, no errors."
+                print("Validation complete, no errors.")
             else:
-                print "Validation failed."
+                print("Validation failed.")
         except:
-            print sys.exc_info()
+            print(sys.exc_info())
             sys.stderr.write(textwrap.fill("Error parsing contents of the VERSION file \"" + verfile + "\". Ensure the file was generated with bitfit and not another tool. If the problem persists, open a ticket at https://github.com/joswr1ght/bitfit/issues and attach the VERSION file.", width=term_width()) + "\n")
     else:
         # Just print out the list with Linux-syle filenames
-        print "# bitfit %s output generated on %s by %s\r"%(VER,str(datetime.now()),getpass.getuser())
-        print "# " + " ".join(sys.argv) + "\r"
-        print "# filename,MD5,SHA1\r"
+        print("# bitfit %s output generated on %s by %s\r"%(VER,str(datetime.now()),getpass.getuser()))
+        print("# " + " ".join(sys.argv) + "\r")
+        print("# filename,MD5,SHA1\r")
         writer = csv.writer(sys.stdout)
         writer.writerows(filelist)
 
